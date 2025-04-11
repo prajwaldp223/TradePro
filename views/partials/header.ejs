@@ -9,6 +9,7 @@
   </title>
   <link rel="stylesheet" href="/css/style.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 
 <body>
@@ -31,20 +32,25 @@
 
       <div class="navbar-auth">
         <% if (user) { %>
-          <div class="dropdown">
-            <button class="btn btn-outline">
-              <a href="/profile">
-                <%=user.username %> ($<%= typeof user.balance==='number' ? user.balance.toFixed(2) : '0.00' %>)
-              </a>
-            </button>
-            <button class="btn btn-danger">
-              <a href="/auth/logout">Logout</a>
-            </button>
-            <!-- <div class="dropdown-menu">
-             
-              
-              <a href="/auth/logout">Logout</a>
-            </div> -->
+          <div class="dropdown d-flex align-items-center">
+            <a href="/profile" class="navbar-profile-link mr-2">
+              <div class="navbar-profile d-flex align-items-center">
+                <div class="profile-avatar">
+                  <% if (user.profile_picture) { %>
+                    <img src="<%= user.profile_picture %>" alt="<%= user.username %>" class="profile-img">
+                    <% } else { %>
+                      <div class="avatar">
+                        <%= user.username.charAt(0).toUpperCase() %>
+                      </div>
+                      <% } %>
+                </div>
+                <span class="navbar-username">
+                  <%= user.username %> ($<%= typeof user.balance==='number' ? user.balance.toFixed(2) :
+                      parseFloat(user.balance || 0).toFixed(2) %>)
+                </span>
+              </div>
+            </a>
+            <a href="/auth/logout" class="btn btn-danger btn-sm">Logout</a>
           </div>
           <% } else { %>
             <a href="/auth/login" class="btn btn-outline">Login</a>
@@ -64,18 +70,43 @@
       <li><a href="/" class="<%= title.includes('Home') ? 'active' : '' %>">Home</a></li>
       <li><a href="/stocks" class="<%= title.includes('Stocks') ? 'active' : '' %>">Stocks</a></li>
       <% if (user) { %>
-        <li><a href="/portfolio" class="<%= title.includes('Portfolio') ? 'active' : '' %>">Portfolio</a></li>
-        <li><a href="/wallet" class="<%= title.includes('Wallet') ? 'active' : '' %>">Wallet</a></li>
-        <li><a href="/dashboard" class="<%= title.includes('Dashboard') ? 'active' : '' %>">Dashboard</a></li>
-        <li><a href="/profile" class="<%= title.includes('Profile') ? 'active' : '' %>">Profile</a></li>
-        <li><a href="/transactions" class="<%= title.includes('Transactions') ? 'active' : '' %>">Transactions</a></li>
-        <li><a href="/auth/logout">Logout</a></li>
-        <% } else { %>
-          <div class="mobile-menu-auth">
-            <a href="/auth/login" class="btn btn-outline">Login</a>
-            <a href="/auth/register" class="btn btn-primary">Register</a>
-          </div>
-          <% } %>
+        <% if (user.profile_picture) { %>
+          <li class="mobile-profile">
+            <a href="/profile">
+              <div class="profile-avatar">
+                <img src="<%= user.profile_picture %>" alt="<%= user.username %>" class="profile-img">
+              </div>
+              <span>
+                <%= user.username %>
+              </span>
+            </a>
+          </li>
+          <% } else { %>
+            <li class="mobile-profile">
+              <a href="/profile">
+                <div class="profile-avatar">
+                  <div class="avatar">
+                    <%= user.username.charAt(0).toUpperCase() %>
+                  </div>
+                </div>
+                <span>
+                  <%= user.username %>
+                </span>
+              </a>
+            </li>
+            <% } %>
+              <li><a href="/portfolio" class="<%= title.includes('Portfolio') ? 'active' : '' %>">Portfolio</a></li>
+              <li><a href="/wallet" class="<%= title.includes('Wallet') ? 'active' : '' %>">Wallet</a></li>
+              <li><a href="/dashboard" class="<%= title.includes('Dashboard') ? 'active' : '' %>">Dashboard</a></li>
+              <li><a href="/transactions" class="<%= title.includes('Transactions') ? 'active' : '' %>">Transactions</a>
+              </li>
+              <li><a href="/auth/logout">Logout</a></li>
+              <% } else { %>
+                <div class="mobile-menu-auth">
+                  <a href="/auth/login" class="btn btn-outline">Login</a>
+                  <a href="/auth/register" class="btn btn-primary">Register</a>
+                </div>
+                <% } %>
     </ul>
   </div>
 

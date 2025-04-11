@@ -1,0 +1,69 @@
+<h1 class="mb-4">Manage Stocks</h1>
+
+<div class="admin-table-container">
+    <div class="admin-table-header">
+        <h2 class="admin-table-title">Stocks</h2>
+        <a href="/admin/stocks/add" class="btn btn-primary">
+            <i class="fas fa-plus mr-2"></i> Add Stock
+        </a>
+    </div>
+
+    <div class="table-container">
+        <table class="admin-table">
+            <thead>
+                <tr>
+                    <th>Symbol</th>
+                    <th>Name</th>
+                    <th>Price</th>
+                    <th>Change</th>
+                    <th>Volume</th>
+                    <th>Market Cap</th>
+                    <th>Sector</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% if (stocks && stocks.length> 0) { %>
+                    <% stocks.forEach(stock=> { %>
+                        <tr>
+                            <td><strong>
+                                    <%= stock.id %>
+                                </strong></td>
+                            <td>
+                                <%= stock.name %>
+                            </td>
+                            <td>$<%= parseFloat(stock.price).toFixed(2) %>
+                            </td>
+                            <td class="<%= parseFloat(stock.change) >= 0 ? 'text-success' : 'text-danger' %>">
+                                <%= parseFloat(stock.change)>= 0 ? '+' : '' %><%= parseFloat(stock.change).toFixed(2) %>
+                                        (<%= parseFloat(stock.change_percent).toFixed(2) %>%)
+                            </td>
+                            <td>
+                                <%= parseInt(stock.volume).toLocaleString() %>
+                            </td>
+                            <td>$<%= (parseInt(stock.market_cap) / 1000000000).toFixed(2) %>B</td>
+                            <td>
+                                <%= stock.sector %>
+                            </td>
+                            <td class="actions">
+                                <a href="/admin/stocks/edit/<%= stock.id %>" class="btn btn-sm btn-outline">
+                                    <i class="fas fa-edit"></i> Edit
+                                </a>
+                                <form action="/admin/stocks/delete/<%= stock.id %>" method="POST" class="confirm-form"
+                                    data-confirm-message="Are you sure you want to delete this stock? This will also delete all holdings of this stock.">
+                                    <button type="submit" class="btn btn-sm btn-danger">
+                                        <i class="fas fa-trash"></i> Delete
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                        <% }) %>
+                            <% } else { %>
+                                <tr>
+                                    <td colspan="8" class="text-center py-4">No stocks found</td>
+                                </tr>
+                                <% } %>
+            </tbody>
+        </table>
+    </div>
+</div>

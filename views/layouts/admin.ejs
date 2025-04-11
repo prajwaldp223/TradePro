@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>
+        <%= title %>
+    </title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/admin.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+
+<body class="admin-body">
+    <!-- Admin Navbar -->
+    <nav class="admin-navbar">
+        <div class="admin-navbar-brand">
+            <a href="/admin/dashboard">TradePro Admin</a>
+        </div>
+
+        <% if (typeof admin !=='undefined' ) { %>
+            <div class="admin-navbar-user">
+                <span>
+                    <%= admin.username %>
+                </span>
+                <a href="/admin/logout" class="btn btn-sm btn-danger">Logout</a>
+            </div>
+            <% } %>
+    </nav>
+
+    <div class="admin-container">
+        <% if (typeof admin !=='undefined' ) { %>
+            <!-- Admin Sidebar -->
+            <div class="admin-sidebar">
+                <ul class="admin-menu">
+                    <li>
+                        <a href="/admin/dashboard" class="<%= title.includes('Dashboard') ? 'active' : '' %>">
+                            <i class="fas fa-tachometer-alt"></i> Dashboard
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/admin/users" class="<%= title.includes('Users') ? 'active' : '' %>">
+                            <i class="fas fa-users"></i> Manage Users
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/admin/stocks" class="<%= title.includes('Stocks') ? 'active' : '' %>">
+                            <i class="fas fa-chart-line"></i> Manage Stocks
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/" target="_blank">
+                            <i class="fas fa-external-link-alt"></i> View Site
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            <% } %>
+
+                <!-- Admin Content -->
+                <div class="admin-content">
+                    <!-- Flash messages -->
+                    <% if(typeof success_msg !=='undefined' && success_msg.length> 0) { %>
+                        <div class="alert alert-success">
+                            <%= success_msg %>
+                        </div>
+                        <% } %>
+
+                            <% if(typeof error_msg !=='undefined' && error_msg.length> 0) { %>
+                                <div class="alert alert-danger">
+                                    <%= error_msg %>
+                                </div>
+                                <% } %>
+
+                                    <!-- Content -->
+                                    <%- body %>
+                </div>
+    </div>
+
+    <script>
+        // Admin panel JavaScript
+        document.addEventListener('DOMContentLoaded', function () {
+            // Handle confirmation dialogs
+            const confirmForms = document.querySelectorAll('.confirm-form');
+            confirmForms.forEach(form => {
+                form.addEventListener('submit', function (e) {
+                    const message = this.dataset.confirmMessage || 'Are you sure you want to perform this action?';
+                    if (!confirm(message)) {
+                        e.preventDefault();
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+
+</html>

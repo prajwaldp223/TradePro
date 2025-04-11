@@ -9,7 +9,7 @@ async function setupDatabase() {
     const connection = await mysql.createConnection({
       host: process.env.DB_HOST || "localhost",
       user: process.env.DB_USER || "root",
-      password: process.env.DB_PASSWORD || "Prajwal@223",
+      password: process.env.DB_PASSWORD || "",
       multipleStatements: true,
     })
 
@@ -27,18 +27,36 @@ async function setupDatabase() {
     const hashedPassword = await bcrypt.hash("password", salt)
 
     // Check if demo user already exists
-    const [existingUsers] = await connection.query("SELECT * FROM trading_platform.users WHERE email = ?", [
+    const [existingUsers] = await connection.query("SELECT * FROM trading_new.users WHERE email = ?", [
       "demo@example.com",
     ])
 
     if (existingUsers.length === 0) {
       await connection.query(
-        "INSERT INTO trading_platform.users (username, email, password, balance) VALUES (?, ?, ?, ?)",
+        "INSERT INTO trading_new.users (username, email, password, balance) VALUES (?, ?, ?, ?)",
         ["demouser", "demo@example.com", hashedPassword, 10000],
       )
       console.log("Demo user created successfully")
     } else {
       console.log("Demo user already exists")
+    }
+
+    // Create admin user
+    const adminHashedPassword = await bcrypt.hash("admin123", salt)
+
+    // Check if admin user already exists
+    const [existingAdmins] = await connection.query("SELECT * FROM trading_new.admins WHERE email = ?", [
+      "admin@tradepro.com",
+    ])
+
+    if (existingAdmins.length === 0) {
+      await connection.query(
+        "INSERT INTO trading_new.admins (username, email, password) VALUES (?, ?, ?)",
+        ["admin", "admin@tradepro.com", adminHashedPassword],
+      )
+      console.log("Admin user created successfully")
+    } else {
+      console.log("Admin user already exists")
     }
 
     // Close connection

@@ -1,0 +1,293 @@
+/* Admin Panel Styles */
+:root {
+    --admin-primary: #3b82f6;
+    --admin-sidebar: #1e293b;
+    --admin-sidebar-hover: #334155;
+    --admin-sidebar-active: #475569;
+    --admin-text: #f1f5f9;
+}
+
+.admin-body {
+    min-height: 100vh;
+    background-color: #f8fafc;
+}
+
+/* Admin Navbar */
+.admin-navbar {
+    background-color: white;
+    border-bottom: 1px solid #e2e8f0;
+    padding: 1rem 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.admin-navbar-brand a {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--admin-primary);
+    text-decoration: none;
+}
+
+.admin-navbar-user {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.admin-navbar-user span {
+    font-weight: 500;
+}
+
+/* Admin Container */
+.admin-container {
+    display: flex;
+    min-height: calc(100vh - 4rem);
+}
+
+/* Admin Sidebar */
+.admin-sidebar {
+    width: 250px;
+    background-color: var(--admin-sidebar);
+    color: var(--admin-text);
+}
+
+.admin-menu {
+    list-style: none;
+    padding: 1rem 0;
+}
+
+.admin-menu li {
+    padding: 0;
+}
+
+.admin-menu a {
+    display: flex;
+    align-items: center;
+    padding: 0.75rem 1.5rem;
+    color: var(--admin-text);
+    text-decoration: none;
+    transition: background-color 0.2s ease;
+}
+
+.admin-menu a:hover {
+    background-color: var(--admin-sidebar-hover);
+}
+
+.admin-menu a.active {
+    background-color: var(--admin-sidebar-active);
+    border-left: 4px solid var(--admin-primary);
+}
+
+.admin-menu i {
+    margin-right: 0.75rem;
+    font-size: 1rem;
+    width: 20px;
+    text-align: center;
+}
+
+/* Admin Content */
+.admin-content {
+    flex: 1;
+    padding: 2rem;
+    overflow-y: auto;
+}
+
+/* Admin Dashboard Cards */
+.admin-dashboard {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.admin-stat-card {
+    background-color: white;
+    border-radius: 0.5rem;
+    padding: 1.5rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+}
+
+.admin-stat-title {
+    font-weight: 600;
+    color: #64748b;
+    margin-bottom: 0.5rem;
+    font-size: 0.875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.admin-stat-value {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #334155;
+}
+
+.admin-stat-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 9999px;
+    background-color: rgba(59, 130, 246, 0.1);
+    color: var(--admin-primary);
+    margin-bottom: 1rem;
+}
+
+/* Admin Login Page */
+.admin-login-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background-color: #f8fafc;
+}
+
+.admin-login-card {
+    width: 100%;
+    max-width: 400px;
+    background-color: white;
+    border-radius: 0.5rem;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+.admin-login-header {
+    padding: 1.5rem;
+    background-color: var(--admin-primary);
+    color: white;
+    text-align: center;
+}
+
+.admin-login-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 0.25rem;
+}
+
+.admin-login-subtitle {
+    opacity: 0.9;
+    font-size: 0.875rem;
+}
+
+.admin-login-body {
+    padding: 1.5rem;
+}
+
+/* Admin Tables */
+.admin-table-container {
+    background-color: white;
+    border-radius: 0.5rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+.admin-table-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.admin-table-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #334155;
+}
+
+.admin-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.admin-table th,
+.admin-table td {
+    padding: 0.75rem 1.5rem;
+    text-align: left;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.admin-table th {
+    font-weight: 600;
+    color: #64748b;
+    background-color: #f8fafc;
+}
+
+.admin-table tr:last-child td {
+    border-bottom: none;
+}
+
+.admin-table tr:hover {
+    background-color: #f8fafc;
+}
+
+.admin-table .actions {
+    display: flex;
+    gap: 0.5rem;
+}
+
+/* Admin Forms */
+.admin-form-container {
+    background-color: white;
+    border-radius: 0.5rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+.admin-form-header {
+    padding: 1.25rem 1.5rem;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.admin-form-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #334155;
+}
+
+.admin-form-content {
+    padding: 1.5rem;
+}
+
+.admin-form-footer {
+    padding: 1.25rem 1.5rem;
+    border-top: 1px solid #e2e8f0;
+    background-color: #f8fafc;
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.75rem;
+}
+
+/* Responsive Styles */
+@media (max-width: 768px) {
+    .admin-navbar {
+        padding: 1rem;
+    }
+
+    .admin-container {
+        flex-direction: column;
+    }
+
+    .admin-sidebar {
+        width: 100%;
+        height: auto;
+    }
+
+    .admin-content {
+        padding: 1rem;
+    }
+
+    .admin-dashboard {
+        grid-template-columns: 1fr;
+    }
+
+    .admin-table th,
+    .admin-table td {
+        padding: 0.5rem 0.75rem;
+    }
+}

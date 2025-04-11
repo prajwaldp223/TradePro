@@ -15,8 +15,41 @@ const isAuthenticated = (req, res, next) => {
   res.redirect("/auth/login")
 }
 
+// Middleware to refresh user data from database
+const refreshUserData = async (req, res, next) => {
+  if (!req.session.user) {
+    return next();
+  }
+
+  try {
+    console.log("Refreshing user data for wallet page");
+    const [users] = await pool.query("SELECT * FROM users WHERE id = ?", [req.session.user.id]);
+
+    if (users.length === 0) {
+      req.flash("error_msg", "User not found");
+      return res.redirect("/auth/logout");
+    }
+
+    const user = users[0];
+    console.log(`Current session balance: $${req.session.user.balance}`);
+    console.log(`Database balance: $${user.balance}`);
+
+    // Update session with the latest user data
+    req.session.user = {
+      ...req.session.user,
+      balance: user.balance
+    };
+
+    console.log(`Session updated with latest data. Balance: $${req.session.user.balance}`);
+    next();
+  } catch (error) {
+    console.error("Error refreshing user data:", error);
+    next();
+  }
+};
+
 // Wallet page
-router.get("/", isAuthenticated, (req, res) => {
+router.get("/", isAuthenticated, refreshUserData, (req, res) => {
   res.render("wallet/index", {
     title: "Wallet - TradePro",
     user: req.session.user,
@@ -36,15 +69,37 @@ router.post(
     }
 
     const amount = Number.parseFloat(req.body.amount)
+    console.log(`Deposit requested: $${amount.toFixed(2)} for user ID: ${req.session.user.id}`)
 
     try {
+      // First, get the current balance from database to ensure we have the most up-to-date value
+      const [currentUser] = await pool.query(
+        "SELECT balance FROM users WHERE id = ?",
+        [req.session.user.id]
+      )
+
+      if (currentUser.length === 0) {
+        throw new Error("User not found")
+      }
+
+      const currentBalance = parseFloat(currentUser[0].balance)
+      const newBalance = currentBalance + amount
+
+      console.log(`Current balance from DB: $${currentBalance.toFixed(2)}`)
+      console.log(`New balance will be: $${newBalance.toFixed(2)}`)
+
       // Start transaction
       const connection = await pool.getConnection()
       await connection.beginTransaction()
 
       try {
         // Update user balance
-        await connection.query("UPDATE users SET balance = balance + ? WHERE id = ?", [amount, req.session.user.id])
+        const updateResult = await connection.query(
+          "UPDATE users SET balance = ? WHERE id = ?",
+          [newBalance, req.session.user.id]
+        )
+
+        console.log(`Database update result:`, updateResult[0].affectedRows === 1 ? 'Success' : 'Failed')
 
         // Create transaction record
         await connection.query(
@@ -56,8 +111,16 @@ router.post(
         await connection.commit()
         connection.release()
 
-        // Update session balance
-        req.session.user.balance += amount
+        // Update session balance with the new calculated balance
+        req.session.user.balance = newBalance
+        console.log(`Session balance updated to: $${req.session.user.balance.toFixed(2)}`)
+
+        // Save session to ensure it's updated
+        req.session.save(err => {
+          if (err) {
+            console.error("Error saving session:", err)
+          }
+        })
 
         req.flash("success_msg", `Successfully deposited $${amount.toFixed(2)}`)
         res.redirect("/wallet")
@@ -87,21 +150,44 @@ router.post(
     }
 
     const amount = Number.parseFloat(req.body.amount)
-
-    // Check if user has enough balance
-    if (req.session.user.balance < amount) {
-      req.flash("error_msg", "Insufficient funds")
-      return res.redirect("/wallet")
-    }
+    console.log(`Withdrawal requested: $${amount.toFixed(2)} for user ID: ${req.session.user.id}`)
 
     try {
+      // First, get the current balance from database to ensure we have the most up-to-date value
+      const [currentUser] = await pool.query(
+        "SELECT balance FROM users WHERE id = ?",
+        [req.session.user.id]
+      )
+
+      if (currentUser.length === 0) {
+        throw new Error("User not found")
+      }
+
+      const currentBalance = parseFloat(currentUser[0].balance)
+      console.log(`Current balance from DB: $${currentBalance.toFixed(2)}`)
+
+      // Check if user has enough balance
+      if (currentBalance < amount) {
+        console.log(`Insufficient funds: Requested $${amount.toFixed(2)}, Available: $${currentBalance.toFixed(2)}`)
+        req.flash("error_msg", "Insufficient funds")
+        return res.redirect("/wallet")
+      }
+
+      const newBalance = currentBalance - amount
+      console.log(`New balance will be: $${newBalance.toFixed(2)}`)
+
       // Start transaction
       const connection = await pool.getConnection()
       await connection.beginTransaction()
 
       try {
         // Update user balance
-        await connection.query("UPDATE users SET balance = balance - ? WHERE id = ?", [amount, req.session.user.id])
+        const updateResult = await connection.query(
+          "UPDATE users SET balance = ? WHERE id = ?",
+          [newBalance, req.session.user.id]
+        )
+
+        console.log(`Database update result:`, updateResult[0].affectedRows === 1 ? 'Success' : 'Failed')
 
         // Create transaction record
         await connection.query(
@@ -113,8 +199,16 @@ router.post(
         await connection.commit()
         connection.release()
 
-        // Update session balance
-        req.session.user.balance -= amount
+        // Update session balance with the new calculated balance
+        req.session.user.balance = newBalance
+        console.log(`Session balance updated to: $${req.session.user.balance.toFixed(2)}`)
+
+        // Save session to ensure it's updated
+        req.session.save(err => {
+          if (err) {
+            console.error("Error saving session:", err)
+          }
+        })
 
         req.flash("success_msg", `Successfully withdrew $${amount.toFixed(2)}`)
         res.redirect("/wallet")

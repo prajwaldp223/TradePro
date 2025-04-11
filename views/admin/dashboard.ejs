@@ -1,0 +1,56 @@
+<h1 class="mb-4">Dashboard</h1>
+
+<div class="admin-dashboard">
+    <div class="admin-stat-card">
+        <div class="admin-stat-icon">
+            <i class="fas fa-users"></i>
+        </div>
+        <div class="admin-stat-title">Total Users</div>
+        <div class="admin-stat-value">
+            <%= stats.users %>
+        </div>
+    </div>
+
+    <div class="admin-stat-card">
+        <div class="admin-stat-icon">
+            <i class="fas fa-chart-line"></i>
+        </div>
+        <div class="admin-stat-title">Total Stocks</div>
+        <div class="admin-stat-value">
+            <%= stats.stocks %>
+        </div>
+    </div>
+
+    <div class="admin-stat-card">
+        <div class="admin-stat-icon">
+            <i class="fas fa-exchange-alt"></i>
+        </div>
+        <div class="admin-stat-title">Total Transactions</div>
+        <div class="admin-stat-value">
+            <%= stats.transactions %>
+        </div>
+    </div>
+</div>
+
+<div class="admin-table-container mt-5">
+    <div class="admin-table-header">
+        <h2 class="admin-table-title">Quick Actions</h2>
+    </div>
+
+    <div style="padding: 1.5rem;">
+        <div class="grid grid-cols-2 gap-4">
+            <a href="/admin/users" class="btn btn-primary">
+                <i class="fas fa-users mr-2"></i> Manage Users
+            </a>
+            <a href="/admin/stocks" class="btn btn-primary">
+                <i class="fas fa-chart-line mr-2"></i> Manage Stocks
+            </a>
+            <a href="/admin/stocks/add" class="btn btn-outline">
+                <i class="fas fa-plus mr-2"></i> Add New Stock
+            </a>
+            <a href="/" target="_blank" class="btn btn-outline">
+                <i class="fas fa-external-link-alt mr-2"></i> View Site
+            </a>
+        </div>
+    </div>
+</div>

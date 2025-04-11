@@ -1,0 +1,68 @@
+<h1 class="mb-4">Manage Users</h1>
+
+<div class="admin-table-container">
+    <div class="admin-table-header">
+        <h2 class="admin-table-title">Users</h2>
+    </div>
+
+    <div class="table-container">
+        <table class="admin-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Username</th>
+                    <th>Email</th>
+                    <th>Balance</th>
+                    <th>Joined</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% if (users && users.length> 0) { %>
+                    <% users.forEach(user=> { %>
+                        <tr>
+                            <td>
+                                <%= user.id %>
+                            </td>
+                            <td>
+                                <% if (user.profile_picture) { %>
+                                    <div style="display: flex; align-items: center;">
+                                        <img src="<%= user.profile_picture %>" alt="<%= user.username %>"
+                                            style="width: 30px; height: 30px; border-radius: 50%; object-fit: cover; margin-right: 8px;">
+                                        <%= user.username %>
+                                    </div>
+                                    <% } else { %>
+                                        <%= user.username %>
+                                            <% } %>
+                            </td>
+                            <td>
+                                <%= user.email %>
+                            </td>
+                            <td>$<%= typeof user.balance==='number' ? user.balance.toFixed(2) :
+                                    parseFloat(user.balance).toFixed(2) %>
+                            </td>
+                            <td>
+                                <%= new Date(user.created_at).toLocaleDateString() %>
+                            </td>
+                            <td class="actions">
+                                <a href="/admin/users/edit/<%= user.id %>" class="btn btn-sm btn-outline">
+                                    <i class="fas fa-edit"></i> Edit
+                                </a>
+                                <form action="/admin/users/delete/<%= user.id %>" method="POST" class="confirm-form"
+                                    data-confirm-message="Are you sure you want to delete this user? This action cannot be undone.">
+                                    <button type="submit" class="btn btn-sm btn-danger">
+                                        <i class="fas fa-trash"></i> Delete
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                        <% }) %>
+                            <% } else { %>
+                                <tr>
+                                    <td colspan="6" class="text-center py-4">No users found</td>
+                                </tr>
+                                <% } %>
+            </tbody>
+        </table>
+    </div>
+</div>

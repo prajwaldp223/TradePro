@@ -1,10 +1,9 @@
-<%- include('partials/header') %>
-
 <div class="container py-5 text-center">
-  <h1 class="mb-4">Server Error</h1>
-  <p class="mb-5">An error occurred: <%= error %></p>
-  <a href="/" class="btn btn-primary">Go Home</a>
+  <div class="error-container">
+    <h1>Server Error</h1>
+    <p>
+      <%=error %>
+    </p>
+    <a href="/" class="btn btn-primary mt-4">Go Home</a>
+  </div>
 </div>
-
-<%- include('partials/footer') %>
-

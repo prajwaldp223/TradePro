@@ -1,0 +1,59 @@
+<h1 class="mb-4">Edit User</h1>
+
+<div class="admin-form-container">
+    <div class="admin-form-header">
+        <h2 class="admin-form-title">User Details</h2>
+    </div>
+
+    <div class="admin-form-content">
+        <form action="/admin/users/edit/<%= user.id %>" method="POST">
+            <div class="form-group">
+                <label for="username" class="form-label">Username</label>
+                <input type="text" id="username" name="username" class="form-control" value="<%= user.username %>"
+                    required>
+            </div>
+
+            <div class="form-group">
+                <label for="email" class="form-label">Email</label>
+                <input type="email" id="email" name="email" class="form-control" value="<%= user.email %>" required>
+            </div>
+
+            <div class="form-group">
+                <label for="balance" class="form-label">Balance ($)</label>
+                <input type="number" id="balance" name="balance" step="0.01" class="form-control"
+                    value="<%= typeof user.balance === 'number' ? user.balance.toFixed(2) : parseFloat(user.balance).toFixed(2) %>"
+                    required>
+            </div>
+
+            <% if (user.profile_picture) { %>
+                <div class="form-group">
+                    <label class="form-label">Profile Picture</label>
+                    <div style="display: flex; align-items: center;">
+                        <img src="<%= user.profile_picture %>" alt="<%= user.username %>"
+                            style="width: 60px; height: 60px; border-radius: 50%; object-fit: cover; margin-right: 15px;">
+                        <span class="text-muted">
+                            <%= user.profile_picture %>
+                        </span>
+                    </div>
+                </div>
+                <% } %>
+
+                    <div class="form-group">
+                        <label class="form-label">Account Info</label>
+                        <div>
+                            <p><strong>ID:</strong>
+                                <%= user.id %>
+                            </p>
+                            <p><strong>Created:</strong>
+                                <%= new Date(user.created_at).toLocaleString() %>
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="admin-form-footer">
+                        <a href="/admin/users" class="btn btn-outline">Cancel</a>
+                        <button type="submit" class="btn btn-primary">Save Changes</button>
+                    </div>
+        </form>
+    </div>
+</div>

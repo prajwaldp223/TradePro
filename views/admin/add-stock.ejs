@@ -1,0 +1,84 @@
+<h1 class="mb-4">Add New Stock</h1>
+
+<div class="admin-form-container">
+    <div class="admin-form-header">
+        <h2 class="admin-form-title">Stock Details</h2>
+    </div>
+
+    <div class="admin-form-content">
+        <form action="/admin/stocks/add" method="POST">
+            <div class="grid grid-cols-2 gap-4">
+                <div class="form-group">
+                    <label for="id" class="form-label">Stock Symbol</label>
+                    <input type="text" id="id" name="id" class="form-control" placeholder="e.g. AAPL" required>
+                    <small class="form-text">Up to 10 characters, uppercase letters</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="name" class="form-label">Company Name</label>
+                    <input type="text" id="name" name="name" class="form-control" placeholder="e.g. Apple Inc."
+                        required>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-4">
+                <div class="form-group">
+                    <label for="price" class="form-label">Current Price ($)</label>
+                    <input type="number" id="price" name="price" step="0.01" class="form-control" placeholder="0.00"
+                        required>
+                </div>
+
+                <div class="form-group">
+                    <label for="change" class="form-label">Daily Change ($)</label>
+                    <input type="number" id="change" name="change" step="0.01" class="form-control" placeholder="0.00"
+                        required>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-4">
+                <div class="form-group">
+                    <label for="change_percent" class="form-label">Change Percent (%)</label>
+                    <input type="number" id="change_percent" name="change_percent" step="0.01" class="form-control"
+                        placeholder="0.00" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="volume" class="form-label">Volume</label>
+                    <input type="number" id="volume" name="volume" class="form-control" placeholder="0" required>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-4">
+                <div class="form-group">
+                    <label for="market_cap" class="form-label">Market Cap ($)</label>
+                    <input type="number" id="market_cap" name="market_cap" class="form-control" placeholder="0"
+                        required>
+                </div>
+
+                <div class="form-group">
+                    <label for="sector" class="form-label">Sector</label>
+                    <select id="sector" name="sector" class="form-control" required>
+                        <option value="">Select Sector</option>
+                        <option value="Technology">Technology</option>
+                        <option value="Financial Services">Financial Services</option>
+                        <option value="Consumer Cyclical">Consumer Cyclical</option>
+                        <option value="Healthcare">Healthcare</option>
+                        <option value="Communication Services">Communication Services</option>
+                        <option value="Automotive">Automotive</option>
+                        <option value="Energy">Energy</option>
+                        <option value="Entertainment">Entertainment</option>
+                        <option value="Industrials">Industrials</option>
+                        <option value="Real Estate">Real Estate</option>
+                        <option value="Utilities">Utilities</option>
+                        <option value="Basic Materials">Basic Materials</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="admin-form-footer">
+                <a href="/admin/stocks" class="btn btn-outline">Cancel</a>
+                <button type="submit" class="btn btn-primary">Add Stock</button>
+            </div>
+        </form>
+    </div>
+</div>

@@ -1,107 +1,195 @@
-<%- include('../partials/header') %>
-
-  <div class="container py-5">
-    <div class="flex justify-between items-center mb-5">
-      <div>
-        <h1 class="mb-1">Stock Market</h1>
-        <p class="text-muted">Browse and trade stocks in real-time</p>
-      </div>
-      <form action="/stocks/refresh" method="POST">
-        <button type="submit" class="btn btn-outline">
-          <i class="fas fa-sync-alt mr-2"></i> Refresh Prices
-        </button>
-      </form>
+<div class="container py-5">
+  <div class="flex justify-between items-center mb-5">
+    <div>
+      <h1 class="mb-1">Stock Market</h1>
+      <p class="text-muted">Browse and trade stocks in real-time</p>
     </div>
+    <form action="/stocks/refresh" method="POST">
+      <button type="submit" class="btn btn-outline">
+        <i class="fas fa-sync-alt mr-2"></i> Refresh Prices
+      </button>
+    </form>
+  </div>
 
-    <div class="mb-4">
-      <div class="form-group">
-        <input type="text" id="stock-search" class="form-control" placeholder="Search by name, symbol, or sector...">
-      </div>
-    </div>
-
-    <div class="grid grid-cols-3 gap-5" id="stocks-container">
-      <% stocks.forEach(stock=> { %>
-        <div class="card stock-card" data-name="<%= stock.name.toLowerCase() %>" data-id="<%= stock.id.toLowerCase() %>"
-          data-sector="<%= stock.sector.toLowerCase() %>">
-          <div class="card-header">
-            <div class="flex justify-between items-start">
-              <div>
-                <h3 class="card-title">
-                  <%= stock.name %>
-                </h3>
-                <p class="card-description">
-                  <%= stock.id %> • <%= stock.sector %>
-                </p>
-              </div>
-              <div class="<%= stock.change >= 0 ? 'text-success' : 'text-danger' %> flex items-center">
-                <i class="fas fa-<%= stock.change >= 0 ? 'arrow-up' : 'arrow-down' %> mr-1"></i>
-                <span>
-                  <%= stock.change>= 0 ? '+' : '' %>
-                    <%= (typeof stock.change_percent==='number' ? stock.change_percent.toFixed(2) :
-                      parseFloat(stock.change_percent || 0).toFixed(2)) %>%
-                </span>
-              </div>
-            </div>
-          </div>
-          <div class="card-content">
-            <div class="flex justify-between items-center mb-4">
-              <div>
-                <p class="text-2xl font-bold">$<%= typeof stock.price==='number' ? stock.price.toFixed(2) :
-                    parseFloat(stock.price || 0).toFixed(2) %>
-                </p>
-                <p
-                  class="<%= typeof stock.change === 'number' && stock.change >= 0 ? 'text-success' : 'text-danger' %>">
-                  <%= typeof stock.change==='number' && stock.change>= 0 ? '+' : '' %>$<%= typeof
-                      stock.change==='number' ? Math.abs(stock.change).toFixed(2) : Math.abs(parseFloat(stock.change ||
-                      0)).toFixed(2) %> today
-                </p>
-              </div>
-              <div class="text-right text-muted">
-                <p>Vol: <%= (stock.volume / 1000000).toFixed(1) %>M</p>
-                <p>MCap: $<%= (stock.market_cap / 1000000000).toFixed(1) %>B</p>
-              </div>
-            </div>
-            <a href="/stocks/<%= stock.id %>" class="btn btn-primary btn-block">Trade</a>
-          </div>
-        </div>
-        <% }) %>
-    </div>
-
-    <div id="no-results" class="text-center py-5" style="display: none;">
-      <p class="text-muted">No stocks found matching your search criteria.</p>
+  <div class="mb-4">
+    <div class="form-group">
+      <input type="text" id="stock-search" class="form-control" placeholder="Search by name, symbol, or sector...">
     </div>
   </div>
 
-  <script>
-    document.addEventListener('DOMContentLoaded', function () {
-      const searchInput = document.getElementById('stock-search');
-      const stockCards = document.querySelectorAll('.stock-card');
-      const noResults = document.getElementById('no-results');
+  <div class="grid grid-cols-3 gap-5" id="stocks-container">
+    <% stocks.forEach((stock, index)=> { %>
+      <div class="card stock-card" data-name="<%= stock.name.toLowerCase() %>" data-id="<%= stock.id.toLowerCase() %>"
+        data-sector="<%= stock.sector.toLowerCase() %>">
+        <div class="card-header">
+          <div class="flex justify-between items-start">
+            <div>
+              <h3 class="card-title">
+                <%= stock.name %>
+              </h3>
+              <p class="card-description">
+                <%= stock.id %> • <%= stock.sector %>
+              </p>
+            </div>
+            <div class="<%= stock.change >= 0 ? 'text-success' : 'text-danger' %> flex items-center">
+              <i class="fas fa-<%= stock.change >= 0 ? 'arrow-up' : 'arrow-down' %> mr-1"></i>
+              <span>
+                <%= stock.change>= 0 ? '+' : '' %>
+                  <%= (typeof stock.change_percent==='number' ? stock.change_percent.toFixed(2) :
+                    parseFloat(stock.change_percent || 0).toFixed(2)) %>%
+              </span>
+            </div>
+          </div>
+        </div>
+        <div class="card-content">
+          <div class="flex justify-between items-center mb-4">
+            <div>
+              <p class="text-2xl font-bold">$<%= typeof stock.price==='number' ? stock.price.toFixed(2) :
+                  parseFloat(stock.price || 0).toFixed(2) %>
+              </p>
+              <p class="<%= typeof stock.change === 'number' && stock.change >= 0 ? 'text-success' : 'text-danger' %>">
+                <%= typeof stock.change==='number' && stock.change>= 0 ? '+' : '' %>$<%= typeof stock.change==='number'
+                    ? Math.abs(stock.change).toFixed(2) : Math.abs(parseFloat(stock.change || 0)).toFixed(2) %> today
+              </p>
+            </div>
+            <div class="text-right text-muted">
+              <p>Vol: <%= (stock.volume / 1000000).toFixed(1) %>M</p>
+              <p>MCap: $<%= (stock.market_cap / 1000000000).toFixed(1) %>B</p>
+            </div>
+          </div>
 
-      searchInput.addEventListener('input', function () {
-        const query = this.value.toLowerCase().trim();
-        let matchCount = 0;
+          <!-- Mini stock chart -->
+          <div style="height: 80px; margin-bottom: 15px; background-color: #f8fafc; border-radius: 4px; padding: 5px;">
+            <canvas id="miniChart<%= index %>" class="mini-stock-chart" data-stock="<%= stock.id %>"
+              data-price="<%= stock.price %>" data-change="<%= stock.change %>"></canvas>
+          </div>
 
-        stockCards.forEach(card => {
-          const name = card.dataset.name;
-          const id = card.dataset.id;
-          const sector = card.dataset.sector;
+          <a href="/stocks/<%= stock.id %>" class="btn btn-primary btn-block">Trade</a>
+        </div>
+      </div>
+      <% }) %>
+  </div>
 
-          if (name.includes(query) || id.includes(query) || sector.includes(query)) {
-            card.style.display = 'block';
-            matchCount++;
-          } else {
-            card.style.display = 'none';
-          }
-        });
+  <div id="no-results" class="text-center py-5" style="display: none;">
+    <p class="text-muted">No stocks found matching your search criteria.</p>
+  </div>
+</div>
 
-        if (matchCount === 0) {
-          noResults.style.display = 'block';
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const searchInput = document.getElementById('stock-search');
+    const stockCards = document.querySelectorAll('.stock-card');
+    const noResults = document.getElementById('no-results');
+
+    searchInput.addEventListener('input', function () {
+      const query = this.value.toLowerCase().trim();
+      let matchCount = 0;
+
+      stockCards.forEach(card => {
+        const name = card.dataset.name;
+        const id = card.dataset.id;
+        const sector = card.dataset.sector;
+
+        if (name.includes(query) || id.includes(query) || sector.includes(query)) {
+          card.style.display = 'block';
+          matchCount++;
         } else {
-          noResults.style.display = 'none';
+          card.style.display = 'none';
+        }
+      });
+
+      if (matchCount === 0) {
+        noResults.style.display = 'block';
+      } else {
+        noResults.style.display = 'none';
+      }
+    });
+
+    // Create mini charts
+    createMiniCharts();
+  });
+
+  function createMiniCharts() {
+    const miniCharts = document.querySelectorAll('.mini-stock-chart');
+
+    miniCharts.forEach(canvas => {
+      const stockSymbol = canvas.dataset.stock;
+      const currentPrice = parseFloat(canvas.dataset.price);
+      const isPositive = parseFloat(canvas.dataset.change) >= 0;
+
+      // Generate 7 data points for mini chart
+      const data = [];
+      let price = currentPrice;
+
+      // Generate a smoother trend for mini charts
+      // Current price is the last point
+      data.push(currentPrice);
+
+      // Add 6 more points going backwards
+      for (let i = 0; i < 6; i++) {
+        // More controlled change for smoother graph
+        const change = isPositive ?
+          ((Math.random() * 0.02) - 0.005) : // Positive trend, mostly up
+          ((Math.random() * 0.02) - 0.015);  // Negative trend, mostly down
+
+        price = price / (1 + change);
+        data.unshift(parseFloat(price.toFixed(2)));
+      }
+
+      // Create mini chart with improved styling
+      new Chart(canvas, {
+        type: 'line',
+        data: {
+          labels: ['', '', '', '', '', '', ''], // Empty labels
+          datasets: [{
+            data: data,
+            borderColor: isPositive ? 'rgb(34, 197, 94)' : 'rgb(239, 68, 68)',
+            backgroundColor: isPositive ? 'rgba(34, 197, 94, 0.1)' : 'rgba(239, 68, 68, 0.1)',
+            fill: 'start',
+            tension: 0.3,
+            pointRadius: 0,
+            borderWidth: 1.5
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              display: false
+            },
+            tooltip: {
+              enabled: false
+            }
+          },
+          scales: {
+            x: {
+              display: false,
+              grid: {
+                display: false,
+                drawBorder: false
+              }
+            },
+            y: {
+              display: false,
+              grid: {
+                display: false,
+                drawBorder: false
+              },
+              // Set min/max to create consistent scale across charts
+              min: function (context) {
+                const min = Math.min(...data);
+                return min * 0.995; // Slight padding
+              },
+              max: function (context) {
+                const max = Math.max(...data);
+                return max * 1.005; // Slight padding
+              }
+            }
+          },
+          events: [] // Disable all events for better performance
         }
       });
     });
-  </script>
-
-  <%- include('../partials/footer') %>
+  }
+</script>

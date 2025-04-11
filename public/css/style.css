@@ -1,6 +1,7 @@
 /* Base styles */
 :root {
   --primary: #3b82f6;
+  --primary-rgb: 59, 130, 246;
   --primary-hover: #2563eb;
   --secondary: #f3f4f6;
   --secondary-hover: #e5e7eb;
@@ -12,6 +13,7 @@
   --border: #e5e7eb;
   --text: #374151;
   --text-light: #6b7280;
+  --background: #f3f4f6;
   --radius: 0.375rem;
 }
 
@@ -44,8 +46,8 @@ a:hover {
   max-width: 1200px;
   margin: 0 auto;
   padding: 0 1rem;
-  
- 
+
+
 }
 
 /* Navbar */
@@ -214,14 +216,27 @@ a:hover {
   border-radius: var(--radius);
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
   overflow: hidden;
-  
+
 }
-.cards{
+#login-form {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+#register-form {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.cards {
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
 }
+
 .card-header {
   padding: 1.25rem 1.5rem;
   border-bottom: 1px solid var(--border);
@@ -561,7 +576,7 @@ a:hover {
   text-align: center;
 
   margin-left: 150px;
- padding-left: 100px;
+  padding-left: 100px;
 }
 
 .hero-buttons {
@@ -708,8 +723,176 @@ a:hover {
   display: block;
 }
 
-/* Responsive */
+/* Alignment and spacing utilities */
+.d-flex {
+  display: flex !important;
+}
+
+.align-items-center {
+  align-items: center !important;
+}
+
+.mr-2 {
+  margin-right: 0.5rem !important;
+}
+
+.mr-3 {
+  margin-right: 0.75rem !important;
+}
+
+.ml-2 {
+  margin-left: 0.5rem !important;
+}
+
+/* Updated Navbar Profile Styles */
+.navbar-profile-link {
+  text-decoration: none;
+}
+
+.navbar-profile {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.navbar-profile .profile-avatar {
+  width: 40px;
+  height: 40px;
+  margin: 0;
+}
+
+.navbar-profile .profile-avatar .avatar {
+  font-size: 1.2rem;
+}
+
+.navbar-username {
+  margin-left: 10px;
+  font-weight: 500;
+}
+
+.dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+/* Mobile Profile Styles */
+.mobile-profile {
+  padding: 10px 15px;
+}
+
+.mobile-profile a {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.mobile-profile .profile-avatar {
+  width: 40px;
+  height: 40px;
+  margin: 0;
+}
+
+.mobile-profile span {
+  font-weight: 500;
+}
+
+/* Profile Avatar Styles */
+.profile-avatar {
+  position: relative;
+  width: 120px;
+  height: 120px;
+  overflow: hidden;
+  border-radius: 50%;
+  background-color: #e9ecef;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 3px solid #f8f9fa;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  margin: 0 auto;
+}
+
+.profile-avatar .avatar {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 3rem;
+  font-weight: bold;
+  color: #6c757d;
+  background-color: #f8f9fa;
+}
+
+.profile-avatar .profile-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+
+/* Drag and Drop Area */
+.drag-area {
+  width: 100%;
+  height: 120px;
+  border: 2px dashed #ced4da;
+  border-radius: 5px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  transition: border 0.3s ease;
+  background-color: #f8f9fa;
+  cursor: pointer;
+}
+
+.drag-area.active {
+  border-color: var(--primary);
+  background-color: rgba(var(--primary-rgb), 0.05);
+}
+
+.drag-area p {
+  margin: 8px 0;
+  font-size: 0.875rem;
+}
+
+.drag-area button {
+  padding: 4px 10px;
+  font-size: 0.75rem;
+  margin-top: 5px;
+}
+
+.border-dashed {
+  border-style: dashed;
+}
+
+.mx-auto {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+#photo-upload-form {
+  background-color: #f8f9fa;
+  border: 1px solid #dee2e6;
+  border-radius: 0.5rem;
+  transition: all 0.3s ease;
+}
+
+/* Hover effects */
+.profile-avatar:hover {
+  cursor: pointer;
+  box-shadow: 0 0 0 3px rgba(var(--primary-rgb), 0.3);
+  transition: box-shadow 0.2s ease;
+}
+
+/* Profile avatar click effect */
+.profile-avatar:active {
+  transform: scale(0.98);
+}
+
+/* Responsive adjustments */
 @media (max-width: 768px) {
+
   .navbar-nav,
   .navbar-auth {
     display: none;
@@ -723,11 +906,25 @@ a:hover {
     display: block;
   }
 
+  /* Make cards stack on mobile */
   .grid-cols-2,
   .grid-cols-3,
   .grid-cols-4,
   .footer-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: 1fr !important;
+  }
+
+  .card {
+    margin-bottom: 1rem;
+  }
+
+  .profile-avatar {
+    width: 100px;
+    height: 100px;
+  }
+
+  .profile-avatar .avatar {
+    font-size: 2.5rem;
   }
 
   .hero-content {
@@ -750,6 +947,7 @@ a:hover {
 }
 
 @media (min-width: 768px) and (max-width: 1024px) {
+
   .grid-cols-3,
   .grid-cols-4,
   .footer-grid {
@@ -757,3 +955,100 @@ a:hover {
   }
 }
 
+/* Form utilities */
+.form-check {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 0.5rem;
+}
+
+.form-check-input {
+  width: 16px;
+  height: 16px;
+  margin-top: 0;
+}
+
+.form-check-label {
+  font-size: 0.85rem;
+  color: var(--text-light);
+  margin-bottom: 0;
+}
+
+/* Spinner */
+.spinner {
+  width: 30px;
+  height: 30px;
+  border: 3px solid rgba(var(--primary-rgb), 0.2);
+  border-radius: 50%;
+  border-top-color: var(--primary);
+  animation: spin 1s linear infinite;
+  margin: 0 auto;
+}
+
+.spinner-border {
+  display: inline-block;
+  width: 1rem;
+  height: 1rem;
+  vertical-align: text-bottom;
+  border: 0.2em solid currentColor;
+  border-right-color: transparent;
+  border-radius: 50%;
+  animation: spin 0.75s linear infinite;
+}
+
+.spinner-border-sm {
+  width: 1rem;
+  height: 1rem;
+  border-width: 0.2em;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* File upload styles */
+.file-info {
+  padding: 6px 10px;
+  background-color: #f8f9fa;
+  border: 1px solid #e2e8f0;
+  border-radius: 4px;
+  display: inline-block;
+  font-size: 0.85rem;
+}
+
+.file-input-container {
+  margin-bottom: 15px;
+}
+
+.d-none {
+  display: none !important;
+}
+
+.d-block {
+  display: block !important;
+}
+
+/* Upload button styles */
+.upload-buttons {
+  margin: 10px 0;
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+}
+
+.upload-buttons .btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 16px;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+.upload-buttons .btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}

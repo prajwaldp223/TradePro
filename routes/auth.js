@@ -49,6 +49,28 @@ router.post(
     }
 
     try {
+      // First check admin table
+      const [admins] = await pool.query("SELECT * FROM admins WHERE email = ?", [req.body.email])
+
+      if (admins.length > 0) {
+        // Admin login
+        const admin = admins[0]
+        const isMatch = await bcrypt.compare(req.body.password, admin.password)
+
+        if (isMatch) {
+          // Create admin session
+          req.session.admin = {
+            id: admin.id,
+            username: admin.username,
+            email: admin.email,
+          }
+
+          req.flash("success_msg", "You are now logged in as admin")
+          return res.redirect("/admin/dashboard")
+        }
+      }
+
+      // If not an admin or admin credentials didn't match, check regular users
       const [users] = await pool.query("SELECT * FROM users WHERE email = ?", [req.body.email])
 
       if (users.length === 0) {
@@ -61,8 +83,9 @@ router.post(
       }
 
       const user = users[0]
-      const isMatch = await bcrypt.compare(req.body.password, user.password)
 
+      // Check password
+      const isMatch = await bcrypt.compare(req.body.password, user.password)
       if (!isMatch) {
         return res.render("auth/login", {
           title: "Login - TradePro",
@@ -72,12 +95,13 @@ router.post(
         })
       }
 
-      // Create session
+      // Create user session
       req.session.user = {
         id: user.id,
         username: user.username,
         email: user.email,
         balance: user.balance,
+        profile_picture: user.profile_picture,
       }
 
       req.flash("success_msg", "You are now logged in")
@@ -86,7 +110,7 @@ router.post(
       console.error("Login error:", error)
       res.render("auth/login", {
         title: "Login - TradePro",
-        error_msg: "An error occurred during login",
+        error_msg: "An error occurred during login. Please try again.",
         email: req.body.email,
         user: null,
       })
@@ -139,29 +163,40 @@ router.post(
       const salt = await bcrypt.genSalt(10)
       const hashedPassword = await bcrypt.hash(req.body.password, salt)
 
-      // Insert new user with starting balance of 10000
-      const [result] = await pool.query("INSERT INTO users (username, email, password, balance) VALUES (?, ?, ?, ?)", [
-        req.body.username,
-        req.body.email,
-        hashedPassword,
-        10000,
-      ])
+      // Start transaction
+      const connection = await pool.getConnection()
+      await connection.beginTransaction()
 
-      // Create session
-      req.session.user = {
-        id: result.insertId,
-        username: req.body.username,
-        email: req.body.email,
-        balance: 10000,
+      try {
+        // Insert new user with starting balance of 10000
+        const [result] = await connection.query(
+          "INSERT INTO users (username, email, password, balance) VALUES (?, ?, ?, ?)",
+          [req.body.username, req.body.email, hashedPassword, 10000]
+        )
+
+        // Create session
+        req.session.user = {
+          id: result.insertId,
+          username: req.body.username,
+          email: req.body.email,
+          balance: 10000,
+        }
+
+        await connection.commit()
+        connection.release()
+
+        req.flash("success_msg", "You are now registered and logged in")
+        res.redirect("/dashboard")
+      } catch (error) {
+        await connection.rollback()
+        connection.release()
+        throw error
       }
-
-      req.flash("success_msg", "You are now registered and logged in")
-      res.redirect("/dashboard")
     } catch (error) {
       console.error("Registration error:", error)
       res.render("auth/register", {
         title: "Register - TradePro",
-        error_msg: "An error occurred during registration",
+        error_msg: "An error occurred during registration. Please try again.",
         username: req.body.username,
         email: req.body.email,
         user: null,

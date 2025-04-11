@@ -1,96 +1,289 @@
-<%- include('../partials/header') %>
+<div class="container py-5">
+  <h1 class="mb-5">Wallet</h1>
 
-  <div class="container py-5">
-    <h1 class="mb-5">Wallet</h1>
-
-    <div class="grid grid-cols-3 gap-6">
-      <!-- Balance Card -->
-      <div class="card">
-        <div class="card-header">
-          <h3 class="card-title">Current Balance</h3>
-        </div>
-        <div class="card-content">
-          <p class="text-3xl font-bold">$<%= typeof user.balance==='number' ? user.balance.toFixed(2) :
-              parseFloat(user.balance || 0).toFixed(2) %>
-          </p>
-          <p class="text-muted mt-2">Available for trading and withdrawals</p>
-        </div>
+  <div class="grid grid-cols-3 gap-6">
+    <!-- Balance Card -->
+    <div class="card">
+      <div class="card-header">
+        <h3 class="card-title">Current Balance</h3>
       </div>
+      <div class="card-content">
+        <p class="text-3xl font-bold">$<%= typeof user.balance==='number' ? user.balance.toFixed(2) :
+            parseFloat(user.balance || 0).toFixed(2) %>
+        </p>
+        <p class="text-muted mt-2">Available for trading and withdrawals</p>
+      </div>
+    </div>
 
-      <!-- Deposit/Withdraw Card -->
-      <div class="card col-span-2">
-        <div class="card-header">
-          <h3 class="card-title">Manage Funds</h3>
-          <p class="card-description">Deposit or withdraw funds from your account</p>
+    <!-- Deposit/Withdraw Card -->
+    <div class="card">
+      <div class="card-header">
+        <h3 class="card-title">Manage Funds</h3>
+        <p class="card-description">Deposit or withdraw funds from your account</p>
+      </div>
+      <div class="card-content">
+        <div class="tabs">
+          <div class="tab active" data-tab="deposit-tab">Deposit</div>
+          <div class="tab" data-tab="withdraw-tab">Withdraw</div>
         </div>
-        <div class="card-content">
-          <div class="tabs">
-            <div class="tab active" data-tab="deposit-tab">Deposit</div>
-            <div class="tab" data-tab="withdraw-tab">Withdraw</div>
-          </div>
 
-          <div id="deposit-tab" class="tab-content active">
-            <form action="/wallet/deposit" method="POST">
-              <div class="form-group">
-                <label for="deposit-amount" class="form-label">Amount to Deposit</label>
-                <div class="flex">
-                  <span
-                    class="inline-flex items-center px-3 border border-r-0 border-gray-300 bg-gray-50 text-gray-500 rounded-l-md">$</span>
-                  <input type="number" id="deposit-amount" name="amount" class="form-control rounded-l-none" min="1"
-                    step="0.01" value="100" required>
-                </div>
+        <div id="deposit-tab" class="tab-content active">
+          <form action="/wallet/deposit" method="POST">
+            <div class="form-group">
+              <label for="deposit-amount" class="form-label">Amount to Deposit</label>
+              <div class="flex">
+                <span
+                  class="inline-flex items-center px-3 border border-r-0 border-gray-300 bg-gray-50 text-gray-500 rounded-l-md">$</span>
+                <input type="number" id="deposit-amount" name="amount" class="form-control rounded-l-none" min="1"
+                  step="0.01" value="100" required>
               </div>
-              <div class="mt-4">
-                <button type="submit" class="btn btn-primary btn-block">Deposit Funds</button>
-              </div>
-              <div class="text-muted mt-3">
-                <p>Note: In a real application, this would connect to a payment processor. For this demo, deposits are
-                  simulated.</p>
-              </div>
-            </form>
-          </div>
+            </div>
+            <div class="mt-4">
+              <button type="submit" class="btn btn-primary btn-block">Deposit Funds</button>
+            </div>
+            <div class="text-muted mt-3">
+              <p>Note: In a real application, this would connect to a payment processor. For this demo, deposits are
+                simulated.</p>
+            </div>
+          </form>
+        </div>
 
-          <div id="withdraw-tab" class="tab-content">
-            <form action="/wallet/withdraw" method="POST">
-              <div class="form-group">
-                <label for="withdraw-amount" class="form-label">Amount to Withdraw</label>
-                <div class="flex">
-                  <span
-                    class="inline-flex items-center px-3 border border-r-0 border-gray-300 bg-gray-50 text-gray-500 rounded-l-md">$</span>
-                  <input type="number" id="withdraw-amount" name="amount" class="form-control rounded-l-none" min="1"
-                    max="<%= user.balance %>" step="0.01" value="100" required>
-                </div>
+        <div id="withdraw-tab" class="tab-content">
+          <form action="/wallet/withdraw" method="POST">
+            <div class="form-group">
+              <label for="withdraw-amount" class="form-label">Amount to Withdraw</label>
+              <div class="flex">
+                <span
+                  class="inline-flex items-center px-3 border border-r-0 border-gray-300 bg-gray-50 text-gray-500 rounded-l-md">$</span>
+                <input type="number" id="withdraw-amount" name="amount" class="form-control rounded-l-none" min="1"
+                  max="<%= user.balance %>" step="0.01" value="100" required>
               </div>
-              <div class="mt-4">
-                <button type="submit" class="btn btn-primary btn-block" <%=user.balance < 1 ? 'disabled' : ''
-                  %>>Withdraw Funds</button>
-                <% if (user.balance < 1) { %>
-                  <p class="text-danger mt-2 text-center">Insufficient funds</p>
-                  <% } %>
-              </div>
-              <div class="text-muted mt-3">
-                <p>Note: In a real application, this would connect to a payment processor. For this demo, withdrawals
-                  are simulated.</p>
-              </div>
-            </form>
-          </div>
+            </div>
+            <div class="mt-4">
+              <button type="submit" class="btn btn-primary btn-block" <%=user.balance < 1 ? 'disabled' : '' %>>Withdraw
+                Funds</button>
+              <% if (user.balance < 1) { %>
+                <p class="text-danger mt-2 text-center">Insufficient funds</p>
+                <% } %>
+            </div>
+            <div class="text-muted mt-3">
+              <p>Note: In a real application, this would connect to a payment processor. For this demo, withdrawals
+                are simulated.</p>
+            </div>
+          </form>
         </div>
       </div>
     </div>
 
-    <!-- Transaction History Card -->
-    <div class="card mt-6">
+    <!-- Trading Card -->
+    <div class="card">
       <div class="card-header">
-        <h3 class="card-title">Transaction History</h3>
-        <p class="card-description">Recent deposits and withdrawals</p>
+        <h3 class="card-title">Trading</h3>
+        <p class="card-description">Explore trading opportunities</p>
       </div>
       <div class="card-content">
-        <div class="text-center py-4">
-          <p class="text-muted mb-4">View your complete transaction history</p>
-          <a href="/transactions" class="btn btn-primary">View All Transactions</a>
+        <div class="space-y-3">
+          <!-- Stock Trading -->
+          <div class="trading-option">
+            <div class="flex items-center justify-between p-3 border border-gray-200 rounded-lg bg-white">
+              <div>
+                <h4 class="font-medium">Stock Trading</h4>
+                <p class="text-sm text-gray-600">Buy and sell stocks from top companies</p>
+              </div>
+              <a href="/stocks" class="btn btn-sm btn-primary">Trade Now</a>
+            </div>
+          </div>
+
+          <!-- Crypto Trading -->
+          <div class="trading-option">
+            <div class="flex items-center justify-between p-3 border border-gray-200 rounded-lg bg-white">
+              <div>
+                <h4 class="font-medium">Cryptocurrency</h4>
+                <p class="text-sm text-gray-600">Trade popular cryptocurrencies</p>
+              </div>
+              <a href="/crypto" class="btn btn-sm btn-success">Trade Crypto</a>
+            </div>
+          </div>
+
+          <!-- ETFs and Funds -->
+          <div class="trading-option">
+            <div class="flex items-center justify-between p-3 border border-gray-200 rounded-lg bg-white">
+              <div>
+                <h4 class="font-medium">ETFs & Funds</h4>
+                <p class="text-sm text-gray-600">Diversify with exchange-traded funds</p>
+              </div>
+              <a href="/etfs" class="btn btn-sm btn-secondary">Explore</a>
+            </div>
+          </div>
+
+          <!-- Trading Insights -->
+          <div class="trading-option">
+            <div class="flex items-center justify-between p-3 border border-gray-200 rounded-lg bg-white">
+              <div>
+                <h4 class="font-medium">Market Insights</h4>
+                <p class="text-sm text-gray-600">Get the latest market analysis</p>
+              </div>
+              <a href="/insights" class="btn btn-sm btn-outline-primary">View</a>
+            </div>
+          </div>
+        </div>
+
+        <div class="mt-4 text-center">
+          <a href="/portfolio" class="text-primary hover:underline">View Your Portfolio →</a>
         </div>
       </div>
     </div>
   </div>
 
-  <%- include('../partials/footer') %>
+  <!-- Transaction History Card -->
+  <div class="card mt-6">
+    <div class="card-header">
+      <h3 class="card-title">Transaction History</h3>
+      <p class="card-description">Recent deposits and withdrawals</p>
+    </div>
+    <div class="card-content">
+      <div class="text-center py-4">
+        <p class="text-muted mb-4">View your complete transaction history</p>
+        <a href="/transactions" class="btn btn-primary">View All Transactions</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Trading Insights Card -->
+  <div class="card mt-6">
+    <div class="card-header">
+      <h3 class="card-title">Trading Insights</h3>
+      <p class="card-description">Stay informed with global trading developments</p>
+    </div>
+    <div class="card-content">
+      <!-- Market Trends Section -->
+      <div class="mb-6">
+        <h4 class="text-lg font-semibold mb-3 pb-2 border-b">Market Trends</h4>
+        <div class="space-y-4">
+          <div class="news-item pb-3">
+            <div class="flex justify-between items-start">
+              <div>
+                <h4 class="font-medium">Dow up nearly 625 points on gains for JPMorgan Chase, Apple shares</h4>
+                <p class="text-sm text-gray-500">2:08 PM</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="news-item pb-3">
+            <div class="flex justify-between items-start">
+              <div>
+                <h4 class="font-medium">These Stocks Are Moving the Most Today: JPMorgan, Wells Fargo, Texas
+                  Instruments, Newmont, Apple, Nvidia, Tesla, and More</h4>
+                <p class="text-sm text-gray-500">1:59 PM | Barron's</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Regulatory Updates Section -->
+      <div class="mb-6">
+        <h4 class="text-lg font-semibold mb-3 pb-2 border-b">Regulatory Updates</h4>
+        <div class="space-y-4">
+          <div class="news-item pb-3">
+            <div class="flex justify-between items-start">
+              <div>
+                <h4 class="font-medium">The SEC Is Considering Blunting Its Trade-Tracking System</h4>
+                <p class="text-sm text-gray-500">2:11 PM | Barron's</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="news-item pb-3">
+            <div class="flex justify-between items-start">
+              <div>
+                <h4 class="font-medium">Pharma Tariffs Are Coming. Investors Underestimate the Risk.</h4>
+                <p class="text-sm text-gray-500">1:13 PM | Barron's</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Global Trade Section -->
+      <div class="mb-6">
+        <h4 class="text-lg font-semibold mb-3 pb-2 border-b">Global Trade</h4>
+        <div class="space-y-4">
+          <div class="news-item pb-3">
+            <div class="flex justify-between items-start">
+              <div>
+                <h4 class="font-medium">China Raises Tariffs on the U.S. Again. Currencies Are a New Concern.</h4>
+                <p class="text-sm text-gray-500">1:58 PM | Barron's</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="news-item pb-3">
+            <div class="flex justify-between items-start">
+              <div>
+                <h4 class="font-medium">Warehouse-club foot traffic jumped nearly 10% in the week before 'liberation
+                  day' tariffs. But signals are mixed.</h4>
+                <p class="text-sm text-gray-500">2:04 PM</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Economic Outlook Section -->
+      <div class="mb-6">
+        <h4 class="text-lg font-semibold mb-3 pb-2 border-b">Economic Outlook</h4>
+        <div class="space-y-4">
+          <div class="news-item pb-3">
+            <div class="flex justify-between items-start">
+              <div>
+                <h4 class="font-medium">America's Heartland Is Coming Back. Can the Recovery Last?</h4>
+                <p class="text-sm text-gray-500">1:35 PM | Barron's</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="news-item pb-3">
+            <div class="flex justify-between items-start">
+              <div>
+                <h4 class="font-medium">Mortgage applications jump 20% as rates hit a six-month low — and this is the
+                  No. 1 lender of April 2025</h4>
+                <p class="text-sm text-gray-500">1:21 PM | Picks</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="news-item pb-3">
+            <div class="flex justify-between items-start">
+              <div>
+                <h4 class="font-medium">The Easter bunny is coming — and that's bad news for already record-high egg
+                  prices</h4>
+                <p class="text-sm text-gray-500">2:06 PM</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Industry Analysis Section -->
+      <div>
+        <h4 class="text-lg font-semibold mb-3 pb-2 border-b">Industry Analysis</h4>
+        <div class="space-y-4">
+          <div class="news-item pb-3">
+            <div class="flex justify-between items-start">
+              <div>
+                <h4 class="font-medium">MBA programs are broken. Here's how America can still create strong leaders.
+                </h4>
+                <p class="text-sm text-gray-500">1:28 PM | Opinion</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="mt-6 text-center">
+        <a href="/market-insights" class="btn btn-outline-primary">View Detailed Market Analysis</a>
+      </div>
+    </div>
+  </div>
+</div>

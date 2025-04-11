@@ -1,6 +1,12 @@
--- Create database
-CREATE DATABASE IF NOT EXISTS trading_platform;
-USE trading_platform;
+-- Use new database
+USE trading_new;
+
+-- Drop existing tables if they exist (just in case)
+DROP TABLE IF EXISTS transactions;
+DROP TABLE IF EXISTS holdings;
+DROP TABLE IF EXISTS stocks;
+DROP TABLE IF EXISTS users;
+DROP TABLE IF EXISTS admins;
 
 -- Users table
 CREATE TABLE IF NOT EXISTS users (
@@ -18,7 +24,7 @@ CREATE TABLE IF NOT EXISTS stocks (
   id VARCHAR(10) PRIMARY KEY,
   name VARCHAR(100) NOT NULL,
   price DECIMAL(15, 2) NOT NULL,
-  change DECIMAL(15, 2) NOT NULL,
+  `change` DECIMAL(15, 2) NOT NULL,
   change_percent DECIMAL(15, 2) NOT NULL,
   volume BIGINT NOT NULL,
   market_cap BIGINT NOT NULL,
@@ -54,7 +60,7 @@ CREATE TABLE IF NOT EXISTS transactions (
 );
 
 -- Insert sample stocks data
-INSERT INTO stocks (id, name, price, change, change_percent, volume, market_cap, sector) VALUES
+INSERT INTO stocks (id, name, price, `change`, change_percent, volume, market_cap, sector) VALUES
 ('AAPL', 'Apple Inc.', 175.43, 2.35, 1.36, 58432100, 2750000000000, 'Technology'),
 ('MSFT', 'Microsoft Corporation', 338.11, -1.23, -0.36, 22145600, 2520000000000, 'Technology'),
 ('GOOGL', 'Alphabet Inc.', 131.86, 0.94, 0.72, 19876500, 1680000000000, 'Technology'),
@@ -63,4 +69,13 @@ INSERT INTO stocks (id, name, price, change, change_percent, volume, market_cap,
 ('META', 'Meta Platforms, Inc.', 297.74, 4.23, 1.44, 21345600, 765000000000, 'Technology'),
 ('NFLX', 'Netflix, Inc.', 398.89, 7.65, 1.95, 9876500, 177000000000, 'Entertainment'),
 ('JPM', 'JPMorgan Chase & Co.', 142.28, -0.87, -0.61, 12345600, 415000000000, 'Financial Services');
+
+-- Admins table
+CREATE TABLE IF NOT EXISTS admins (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  username VARCHAR(50) NOT NULL,
+  email VARCHAR(100) NOT NULL UNIQUE,
+  password VARCHAR(255) NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
 
