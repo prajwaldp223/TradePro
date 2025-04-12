@@ -40,7 +40,7 @@ const upload = multer({
     }
     cb(new Error('Only image files (jpg, jpeg, png, gif) are allowed'))
   }
-})
+}).single('profile_picture'); // <-- Configure multer to expect a single file with field name 'profile_picture'
 
 // Get database connection pool from app
 const pool = require("../db")
@@ -159,136 +159,76 @@ router.post(
   },
 )
 
-// Handle profile picture upload
-router.post("/upload-profile-picture", isAuthenticated, (req, res) => {
-  console.log("====== PROFILE PICTURE UPLOAD STARTED ======");
-  console.log("Content-Type:", req.headers['content-type']);
-  console.log("Session user:", req.session.user ? req.session.user.id : 'No session user');
+// Handle profile picture upload - Fixed direct approach
+router.post("/upload-profile-picture", isAuthenticated, async (req, res) => {
+  console.log("Profile picture upload started");
 
-  // Ensure upload directory exists
-  const uploadDir = path.join(__dirname, '../public/uploads/profile');
-  console.log("Upload directory path:", uploadDir);
-
-  if (!fs.existsSync(uploadDir)) {
-    try {
-      fs.mkdirSync(uploadDir, { recursive: true });
-      console.log("Created upload directory:", uploadDir);
-    } catch (err) {
-      console.error("Error creating upload directory:", err);
-      req.flash("error_msg", "Error creating upload directory");
+  // Process the upload
+  upload(req, res, async function (err) {
+    if (err) {
+      console.error("Multer error:", err);
+      if (err instanceof multer.MulterError) {
+        if (err.code === 'LIMIT_FILE_SIZE') {
+          req.flash("error_msg", "File is too large. Maximum size is 1MB.");
+        } else {
+          req.flash("error_msg", `Upload error: ${err.code}`);
+        }
+      } else {
+        req.flash("error_msg", err.message || "Error uploading file");
+      }
       return res.redirect("/profile");
     }
-  } else {
-    console.log("Upload directory already exists");
-  }
 
-  // Process file upload with proper error handling
-  try {
-    // Use multer middleware to process the file upload
-    upload.single('profile_picture')(req, res, async function (err) {
-      if (err) {
-        console.error("File upload error:", err);
+    // Check if file exists
+    if (!req.file) {
+      console.error("No file uploaded");
+      req.flash("error_msg", "No file was uploaded. Please select an image.");
+      return res.redirect("/profile");
+    }
 
-        if (err.code === 'LIMIT_FILE_SIZE') {
-          req.flash("error_msg", "File too large. Maximum size is 1MB.");
-        } else {
-          req.flash("error_msg", err.message || "Error uploading profile picture");
-        }
+    try {
+      console.log("File uploaded:", req.file.filename);
 
-        return res.redirect("/profile");
-      }
+      // Path to store in database
+      const relativePath = `/uploads/profile/${req.file.filename}`;
 
-      // Check if file was uploaded
-      if (!req.file) {
-        console.error("No file data in request");
-        console.log("Request body:", req.body);
-        req.flash("error_msg", "No file was uploaded. Please select a file first.");
-        return res.redirect("/profile");
-      }
-
-      try {
-        // Get file details
-        console.log("File upload successful:", {
-          originalname: req.file.originalname,
-          filename: req.file.filename,
-          size: req.file.size,
-          mimetype: req.file.mimetype,
-          path: req.file.path
-        });
-
-        // Format path for database - ensure it's URL friendly
-        const relativePath = `/uploads/profile/${req.file.filename}`;
-        console.log("Relative path for database:", relativePath);
-
-        // Remove old profile picture if exists to save disk space
-        if (req.session.user.profile_picture) {
-          try {
-            const oldPath = path.join(__dirname, '../public', req.session.user.profile_picture);
-            console.log("Old profile picture path:", oldPath);
-
-            if (fs.existsSync(oldPath)) {
-              fs.unlinkSync(oldPath);
-              console.log("Old profile picture deleted");
-            } else {
-              console.log("Old profile picture file not found");
-            }
-          } catch (error) {
-            console.error("Error deleting old profile picture:", error);
-            // Continue even if delete fails
-          }
-        } else {
-          console.log("No previous profile picture to delete");
-        }
-
-        // Start a database connection and transaction for updating profile picture
-        const connection = await pool.getConnection();
-        await connection.beginTransaction();
-
+      // Delete old profile picture if it exists
+      if (req.session.user.profile_picture) {
         try {
-          // Update database with new profile picture path
-          console.log("Updating database with new profile picture path");
-          await connection.query("UPDATE users SET profile_picture = ? WHERE id = ?", [
-            relativePath,
-            req.session.user.id
-          ]);
-
-          // Commit the transaction
-          await connection.commit();
-          connection.release();
-
-          // Update session with new profile picture path
-          req.session.user.profile_picture = relativePath;
-          console.log("Session updated with new profile picture path:", relativePath);
-
-          // Save session to ensure it's updated
-          req.session.save(err => {
-            if (err) {
-              console.error("Error saving session:", err);
-            }
-          });
-
-          req.flash("success_msg", "Profile picture updated successfully");
-          console.log("====== PROFILE PICTURE UPLOAD COMPLETED ======");
-          res.redirect("/profile");
-
-        } catch (dbError) {
-          // Rollback transaction if database update fails
-          await connection.rollback();
-          connection.release();
-          throw dbError;
+          const oldPath = path.join(__dirname, '../public', req.session.user.profile_picture);
+          if (fs.existsSync(oldPath)) {
+            fs.unlinkSync(oldPath);
+            console.log("Deleted old profile picture");
+          }
+        } catch (e) {
+          console.error("Error deleting old picture:", e);
+          // Continue anyway
         }
-
-      } catch (error) {
-        console.error("Database error updating profile picture:", error);
-        req.flash("error_msg", "Error updating profile picture in database");
-        res.redirect("/profile");
       }
-    });
-  } catch (multerError) {
-    console.error("Multer initialization error:", multerError);
-    req.flash("error_msg", "Server error processing upload");
-    res.redirect("/profile");
-  }
+
+      // Update database
+      await pool.query(
+        "UPDATE users SET profile_picture = ? WHERE id = ?",
+        [relativePath, req.session.user.id]
+      );
+
+      // Update session
+      req.session.user.profile_picture = relativePath;
+
+      // Save session changes
+      req.session.save(err => {
+        if (err) {
+          console.error("Error saving session:", err);
+        }
+        req.flash("success_msg", "Profile picture updated successfully!");
+        return res.redirect("/profile");
+      });
+    } catch (error) {
+      console.error("Database error:", error);
+      req.flash("error_msg", "Error saving profile picture to database");
+      return res.redirect("/profile");
+    }
+  });
 });
 
 // Change password

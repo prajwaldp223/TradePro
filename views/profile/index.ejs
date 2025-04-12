@@ -59,9 +59,12 @@
       </div>
       <div class="card-content">
         <div class="text-center mb-4">
-          <div class="profile-avatar mx-auto" id="profile-avatar">
+          <!-- Profile Avatar Display -->
+          <div class="profile-avatar mx-auto"
+            style="width: 150px; height: 150px; border-radius: 50%; overflow: hidden; margin: 0 auto; background-color: #f0f0f0; display: flex; align-items: center; justify-content: center; font-size: 3rem; font-weight: bold; color: #555;">
             <% if (user.profile_picture) { %>
-              <img src="<%= user.profile_picture %>" alt="<%= user.username %>'s profile picture" class="profile-img">
+              <img src="<%= user.profile_picture %>" alt="<%= user.username %>'s profile picture"
+                style="width: 100%; height: 100%; object-fit: cover;">
               <% } else { %>
                 <div class="avatar">
                   <%= user.username.charAt(0).toUpperCase() %>
@@ -69,27 +72,32 @@
                 <% } %>
           </div>
 
+          <!-- Ultra Simple File Upload Form -->
           <div class="mt-4">
-            <!-- Simple File Upload Form -->
             <form action="/profile/upload-profile-picture" method="POST" enctype="multipart/form-data" id="upload-form">
-              <div class="file-input-container text-center">
-                <input type="file" name="profile_picture" id="profile-picture-input" class="d-none"
-                  accept="image/jpeg,image/png,image/gif">
-                <button type="button" id="select-file-btn" class="btn btn-primary mb-3">
-                  <i class="fas fa-upload"></i> Upload Profile Picture
-                </button>
-                <div id="file-info" class="mb-3" style="display: none;">
-                  <span id="selected-filename" class="d-block mb-2 file-info"></span>
-                  <!-- Image preview container -->
-                  <div id="image-preview-container" class="mb-3" style="display: none;">
-                    <img id="image-preview" src="#" alt="Image preview" class="img-thumbnail"
-                      style="max-height: 150px; max-width: 100%;">
+              <div class="file-upload-wrapper">
+                <div id="preview-container" style="display: none; margin: 10px auto;">
+                  <div
+                    style="width: 120px; height: 120px; margin: 0 auto; border-radius: 50%; overflow: hidden; border: 2px solid #e0e0e0;">
+                    <img id="image-preview" src="#" alt="Preview" style="width: 100%; height: 100%; object-fit: cover;">
                   </div>
-                  <button type="submit" class="btn btn-success">Save New Picture</button>
+                  <p class="mt-2 mb-3" id="file-name" style="font-size: 0.9rem; color: #666;"></p>
                 </div>
+
+                <div class="mb-3">
+                  <input type="file" name="profile_picture" id="profile_picture" accept="image/jpeg,image/png,image/gif"
+                    class="form-control-file" style="display: none;" onchange="previewImage(this)">
+                  <label for="profile_picture" class="btn btn-primary">
+                    <i class="fas fa-upload mr-1"></i> Select New Picture
+                  </label>
+                </div>
+
+                <button type="submit" id="upload-btn" class="btn btn-success mb-3">
+                  Save as Profile Picture
+                </button>
               </div>
+              <p class="text-muted mt-2">JPG, GIF or PNG. 1MB max.</p>
             </form>
-            <p class="text-muted mt-2">JPG, GIF or PNG. 1MB max.</p>
           </div>
         </div>
       </div>
@@ -132,125 +140,101 @@
 </div>
 
 <script>
-  document.addEventListener('DOMContentLoaded', function () {
-    const fileInput = document.getElementById('profile-picture-input');
-    const selectButton = document.getElementById('select-file-btn');
-    const fileInfo = document.getElementById('file-info');
-    const selectedFilename = document.getElementById('selected-filename');
-    const form = document.getElementById('upload-form');
-    const debugOutput = document.getElementById('debug-output');
-    const debugInfo = document.getElementById('debug-info');
-    const imagePreview = document.getElementById('image-preview');
-    const imagePreviewContainer = document.getElementById('image-preview-container');
-    const profileAvatar = document.getElementById('profile-avatar');
+  // Simple image preview function
+  function previewImage(input) {
+    const preview = document.getElementById('image-preview');
+    const previewContainer = document.getElementById('preview-container');
+    const fileName = document.getElementById('file-name');
+    const uploadBtn = document.getElementById('upload-btn');
+    const profileAvatar = document.querySelector('.profile-avatar img, .profile-avatar .avatar');
 
-    // Debug function
-    function log(message) {
-      console.log(message);
-      if (debugOutput) {
-        debugOutput.textContent += message + '\n';
+    if (input.files && input.files[0]) {
+      const file = input.files[0];
+
+      // Validate file type
+      const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif'];
+      if (!validTypes.includes(file.type)) {
+        alert('Please select a valid image file (JPG, PNG, or GIF)');
+        input.value = '';
+        previewContainer.style.display = 'none';
+        return;
       }
-    }
 
+      // Validate file size (1MB max)
+      if (file.size > 1024 * 1024) {
+        alert('File size must be less than 1MB');
+        input.value = '';
+        previewContainer.style.display = 'none';
+        return;
+      }
+
+      // Show image preview
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        const imageData = e.target.result;
+
+        // Update the preview thumbnail
+        preview.src = imageData;
+        previewContainer.style.display = 'block';
+        fileName.textContent = file.name + ' (' + Math.round(file.size / 1024) + ' KB)';
+
+        // Also update the main profile avatar immediately
+        if (profileAvatar) {
+          // If it's an avatar placeholder, replace it with an image
+          if (profileAvatar.classList && profileAvatar.classList.contains('avatar')) {
+            const parentElement = profileAvatar.parentElement;
+
+            // Create new image element
+            const newImg = document.createElement('img');
+            newImg.src = imageData;
+            newImg.alt = "Profile preview";
+            newImg.style.width = "100%";
+            newImg.style.height = "100%";
+            newImg.style.objectFit = "cover";
+
+            // Remove the letter avatar and add the image
+            parentElement.innerHTML = '';
+            parentElement.appendChild(newImg);
+          } else {
+            // If it's already an image, just update the src
+            profileAvatar.src = imageData;
+          }
+        }
+      };
+      reader.readAsDataURL(file);
+    } else {
+      previewContainer.style.display = 'none';
+    }
+  }
+
+  // On page load
+  document.addEventListener('DOMContentLoaded', function () {
     // Show debug panel with Ctrl+Shift+D
     document.addEventListener('keydown', function (e) {
       if (e.ctrlKey && e.shiftKey && e.key === 'D') {
+        const debugInfo = document.getElementById('debug-info');
         debugInfo.style.display = debugInfo.style.display === 'none' ? 'block' : 'none';
       }
     });
 
-    log('DOM loaded. File input found: ' + (fileInput ? 'Yes' : 'No'));
-    log('Select button found: ' + (selectButton ? 'Yes' : 'No'));
+    // Handle form submission
+    const form = document.getElementById('upload-form');
+    if (form) {
+      form.addEventListener('submit', function (e) {
+        const fileInput = document.getElementById('profile_picture');
 
-    // Trigger file input click when button is clicked
-    selectButton.addEventListener('click', function () {
-      log('Select button clicked');
-      fileInput.click();
-    });
-
-    // Handle file selection
-    fileInput.addEventListener('change', function () {
-      log('File input changed');
-
-      if (this.files && this.files[0]) {
-        const file = this.files[0];
-        log('File selected: ' + file.name + ' (' + file.type + ', ' + Math.round(file.size / 1024) + ' KB)');
-
-        // Validate file type
-        const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif'];
-        if (!validTypes.includes(file.type)) {
-          log('Invalid file type: ' + file.type);
-          alert('Please select a valid image file (JPG, PNG, or GIF)');
-          this.value = '';
-          fileInfo.style.display = 'none';
-          imagePreviewContainer.style.display = 'none';
+        // Check if a file is selected
+        if (!fileInput.files || !fileInput.files[0]) {
+          e.preventDefault();
+          alert('Please select an image to upload.');
           return;
         }
 
-        // Validate file size (1MB max)
-        if (file.size > 1024 * 1024) {
-          log('File too large: ' + Math.round(file.size / 1024) + ' KB');
-          alert('File size must be less than 1MB');
-          this.value = '';
-          fileInfo.style.display = 'none';
-          imagePreviewContainer.style.display = 'none';
-          return;
-        }
-
-        // Show file info
-        selectedFilename.textContent = `Selected: ${file.name} (${Math.round(file.size / 1024)} KB)`;
-        fileInfo.style.display = 'block';
-
-        // Show image preview
-        const reader = new FileReader();
-        reader.onload = function (e) {
-          imagePreview.src = e.target.result;
-          imagePreviewContainer.style.display = 'block';
-          log('Image preview loaded');
-        };
-        reader.readAsDataURL(file);
-
-        log('File validated and ready to upload');
-      } else {
-        log('No file selected');
-        fileInfo.style.display = 'none';
-        imagePreviewContainer.style.display = 'none';
-      }
-    });
-
-    // Form submission - add loading state
-    form.addEventListener('submit', function (e) {
-      log('Form submitted');
-
-      // Check if a file is selected
-      if (!fileInput.files || !fileInput.files[0]) {
-        log('Submit blocked: No file selected');
-        e.preventDefault();
-        alert('Please select an image to upload.');
-        return;
-      }
-
-      const submitBtn = this.querySelector('button[type="submit"]');
-      submitBtn.disabled = true;
-      submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Uploading...';
-      log('Form submission in progress...');
-
-      // Set a flag in localStorage to indicate an upload is in progress
-      localStorage.setItem('profilePictureUploadInProgress', 'true');
-    });
-
-    // Check if we just came back from a successful upload
-    if (localStorage.getItem('profilePictureUploadInProgress') === 'true') {
-      // Clear the flag
-      localStorage.removeItem('profilePictureUploadInProgress');
-
-      // Check if there's a success message on the page
-      const successAlerts = document.querySelectorAll('.alert-success');
-      if (successAlerts.length > 0 && successAlerts[0].textContent.includes('Profile picture updated')) {
-        log('Profile picture update was successful, refreshing page to show new image');
-        // Force a hard refresh to ensure the browser doesn't use a cached image
-        window.location.reload(true);
-      }
+        // Disable submit button and show loading state
+        const submitBtn = document.getElementById('upload-btn');
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Uploading...';
+      });
     }
   });
 </script>
