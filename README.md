@@ -2,7 +2,60 @@
 
 TradePro is a full-featured web-based trading platform that allows users to manage portfolios, buy and sell stocks, track performance, and manage their wallet. This application provides a comprehensive trading experience with real-time data visualization and user account management.
 
-![TradePro Dashboard](public/img/Chart-iMac.png)
+## Screenshots
+
+### Authentication Screens
+<div style="display: flex; gap: 10px;">
+  <img src="screenshots/login.png" alt="Login Page" width="400"/>
+  <img src="screenshots/register.png" alt="Registration Page" width="400"/>
+</div>
+
+*Secure authentication with login and registration screens*
+
+### Main Interface
+<div style="display: flex; gap: 10px; margin-bottom: 10px;">
+  <img src="screenshots/home.png" alt="Home Page" width="400"/>
+  <img src="screenshots/dashboard.png" alt="User Dashboard" width="400"/>
+</div>
+
+*Landing page and personalized dashboard for users*
+
+### Trading Features
+<div style="display: flex; gap: 10px; margin-bottom: 10px;">
+  <img src="screenshots/stocks.png" alt="Stocks List" width="400"/>
+  <img src="screenshots/stock info.png" alt="Stock Details" width="400"/>
+</div>
+<div style="display: flex; gap: 10px;">
+  <img src="screenshots/portfolio.png" alt="Portfolio View" width="400"/>
+  <img src="screenshots/trading insights.png" alt="Trading Insights" width="400"/>
+</div>
+
+*Full trading functionality with stock listings, detailed views, portfolio management, and market insights*
+
+### Financial Management
+<div style="display: flex; gap: 10px;">
+  <img src="screenshots/wallet.png" alt="Wallet Management" width="400"/>
+  <img src="screenshots/transactions.png" alt="Transaction History" width="400"/>
+</div>
+
+*Manage your funds with wallet operations and track all transactions*
+
+### User Profile
+<img src="screenshots/profile settings.png" alt="Profile Settings" width="800"/>
+
+*Personalize your account and update your profile settings*
+
+### Admin Panel
+<div style="display: flex; gap: 10px; margin-bottom: 10px;">
+  <img src="screenshots/admin dashboard.png" alt="Admin Dashboard" width="400"/>
+  <img src="screenshots/manage user.png" alt="User Management" width="400"/>
+</div>
+<div style="display: flex; gap: 10px;">
+  <img src="screenshots/add stocks.png" alt="Add New Stock" width="400"/>
+  <img src="screenshots/manage stocks.png" alt="Stock Management" width="400"/>
+</div>
+
+*Administrative controls for managing users, stocks, and platform operations*
 
 ## Features
 
@@ -14,14 +67,6 @@ TradePro is a full-featured web-based trading platform that allows users to mana
 - **Profile Management**: Personalize your account with profile pictures
 - **Market News**: Stay updated with the latest financial news
 - **Responsive Design**: Works on desktop and mobile devices
-
-## Screenshots
-
-### Dashboard
-![Dashboard Preview](public/img/dashboard-preview.png)
-
-### Stock Detail
-![Stock Detail with Candlestick Chart](public/img/Candle-Countdown.gif)
 
 ## Technology Stack
 
